@@ -8,6 +8,7 @@ import Control.Monad
 import Control.Conditional
 import SetOrd
 import System.Random
+import Lecture3
 
 {- 
  - General
@@ -16,7 +17,22 @@ import System.Random
 genPositiveIntegers :: Gen Integer
 genPositiveIntegers = abs <$> (arbitrary :: Gen Integer) `suchThat` (> 0)
 
+{-
+ - Can be used as a skeleton for recursive generation. Please improve if necessary.
+ -}
+arbForm' :: Integral a => a -> Gen Form
+arbForm' 0 = fmap Prop (suchThat arbitrary (>0))
+arbForm' n = frequency
+    [ (1, fmap      Prop (suchThat arbitrary (>0))),
+      (1, fmap      Neg param),
+      (1, liftM2    Impl param param),
+      (1, liftM2    Equiv param param),
+      (1, fmap      Dsj (vectorOf 2 param)),
+      (1, fmap      Cnj (vectorOf 2 param)) ]
+    where param = arbForm' (n `div` 2)
 
+instance Arbitrary Form where
+    arbitrary = sized $ \ n -> arbForm' (round (sqrt (fromIntegral n)))
 
 
 
@@ -111,3 +127,14 @@ collect' = foldT (\ x xs -> x : concat xs)
 foldT :: (a -> [b] -> b) -> Tree a -> b
 foldT f (T x ts) = f x (map (foldT f) ts)
 
+{-
+ - Boolean spul
+ -}
+
+contradiction, tautology :: Form -> Bool
+contradiction = not . satisfiable
+tautology f = all (`evl` f) (allVals f)
+
+entails, equiv :: Form -> Form -> Bool
+f `entails` g = tautology $ Impl g f
+f `equiv` g = tautology $ Equiv f g
