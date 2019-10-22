@@ -18,6 +18,36 @@ genPositiveIntegers :: Gen Integer
 genPositiveIntegers = abs <$> (arbitrary :: Gen Integer) `suchThat` (> 0)
 
 {-
+ - Test a prop with multiple (different) inputs. if they are the same you could just use vectorOf
+ -}
+testProps = quickCheck $ 
+    forAll genPositiveIntegers $ \x  ->
+    forAll (arbitrary :: Gen Float) $ \y ->
+        prop_test testFunc x y 
+
+{-
+ - Test a prop with multiple (different) inputs if they are the same you could just use vectorOf
+ - On multiple functions
+ -}
+testMultiple = mapM (\f -> quickCheck $ 
+    forAll genPositiveIntegers $ \x  ->
+    forAll (arbitrary :: Gen Float) $ \y ->
+        prop_test f x y) [testFunc, testFunc2]
+
+prop_test f x y = f x y < f x y+1
+
+testFunc :: Integer -> Float -> Integer
+testFunc x y = (ceiling y) + x
+
+testFunc2 :: Integer -> Float -> Integer
+testFunc2 x y = (round y) + x
+
+
+-- Skeleton for an arbitrary generator
+generalGenerator :: Gen Float
+generalGenerator = abs <$> (arbitrary :: Gen Float) `suchThat` (\x -> x < 1 && x > 0)
+
+{-
  - Can be used as a skeleton for recursive generation. Please improve if necessary.
  -}
 arbForm' :: Integral a => a -> Gen Form
