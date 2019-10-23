@@ -64,10 +64,10 @@ arbForm' n = frequency
 instance Arbitrary Form where
     arbitrary = sized $ \ n -> arbForm' (round (sqrt (fromIntegral n)))
 
-
-
 {-
  - Relations Lab4
+ - Some of these functions were taken from the labs (group 2) & lecture code.
+ - The rest was created on basis of the definitions in the haskel road to programming book.
  -}
 type Rel a = [(a,a)]
 
@@ -116,7 +116,6 @@ symClos r = sort $ r `union` (swap <$> r)
 reflClos :: Ord a => [a] -> Rel a -> Rel a
 reflClos dom r = r `union` [(x,x) | x <- dom]
 
-
 equivClos :: [Int] -> Rel Int -> Rel Int
 equivClos dom r = sort $ fix (\ f s -> if s == final s then s else f $ final s ) r
     where 
@@ -127,9 +126,18 @@ getDom :: Ord a => Rel a -> [a]
 getDom r = nub $ concatMap (\ (x, y) -> [x, y]) r
 
 
-{-  Wat missen we hier?
- - Equivalence partition ding without singletons
+{-  
+ - Equivalence partitioning:
+ - Implementations of the bell numbers & stirling numbers of the second kind taken from solutions of the haskell road to programming.
  -}
+bell :: Integer -> Integer
+bell 0 = 1
+bell n = sum [stirling n k | k <- [1..n]]
+ 
+stirling :: Integer -> Integer -> Integer
+stirling n 1 = 1
+stirling n k | n == k = 1
+             | otherwise = k * (stirling (n-1) k) + stirling (n-1) (k-1)
 
 {-
  - Sets see lab 4
@@ -158,7 +166,7 @@ foldT :: (a -> [b] -> b) -> Tree a -> b
 foldT f (T x ts) = f x (map (foldT f) ts)
 
 {-
- - Boolean spul
+ - Boolean formula functions
  -}
 
 contradiction, tautology :: Form -> Bool
