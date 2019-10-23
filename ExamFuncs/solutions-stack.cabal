@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 66a5bd0419bf3ee6ed9b810262eb3fda3b757559c4df1d97ccc2df0522fbf0b0
+-- hash: 257055f43a767659a95de3384b8f5ea7a9beb535f5eed723978404931c5c62db
 
 name:           solutions-stack
 version:        0.1.0.0
@@ -27,11 +27,9 @@ source-repository head
 
 library
   exposed-modules:
-      Exam
       ExamFuncs
       Lab1
       Lab2
-      Lab5solutions
       Lecture3
       Lecture4
       Lecture5

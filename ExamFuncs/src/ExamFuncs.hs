@@ -165,6 +165,15 @@ collect' = foldT (\ x xs -> x : concat xs)
 foldT :: (a -> [b] -> b) -> Tree a -> b
 foldT f (T x ts) = f x (map (foldT f) ts)
 
+mapT :: (a -> b) -> Tree a -> Tree b
+mapT f (T a xs) = (T (f a) ((mapT f) <$> xs))
+
+count' :: Tree a -> Int
+count' = foldT (\_ xs -> 1 + sum xs)
+
+depth' :: Tree a -> Int
+depth' a = (foldT (\ _ xs -> foldl max 0 xs + 1) a) -1
+
 {-
  - Boolean formula functions
  -}
